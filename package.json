@@ -1,0 +1,48 @@
+{
+  "name": "decide",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "ssh://git@bitbucket.org/mcaderek/decide.git",
+  "author": "Maciej Caderek <maciej@brainhub.pl>",
+  "license": "MIT",
+  "scripts": {
+    "test": "ava src/**/*.spec.js",
+    "start-dev": "nodemon --debug -r babel-register src/index.js",
+    "start": "node build/index.js",
+    "build": "rm -rf build && babel . --out-dir build --ignore node_modules,tests"
+  },
+  "ava": {
+    "require": [
+      "babel-register"
+    ],
+    "babel": {
+      "presets": [
+        "es2017"
+      ],
+      "plugins": [
+        "transform-es2015-modules-commonjs"
+      ]
+    }
+  },
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "koa": "^2.0.0",
+    "koa-body": "^2.0.0",
+    "koa-router": "^7.0.1",
+    "redux": "^3.6.0",
+    "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "ava": "^0.17.0",
+    "babel-cli": "^6.18.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
+    "babel-plugin-transform-object-rest-spread": "^6.22.0",
+    "babel-polyfill": "^6.20.0",
+    "babel-preset-es2017": "^6.16.0",
+    "babel-register": "^6.18.0",
+    "flow-bin": "^0.37.4",
+    "jsdoc": "^3.4.3",
+    "nodemon": "^1.11.0",
+    "standard": "^8.6.0"
+  }
+}

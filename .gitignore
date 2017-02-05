@@ -1,0 +1,9 @@
+node_modules
+JSDoc
+*.log
+*.log.*
+*.temp
+*jsconfig.json
+store
+snapshot
+yarn.lock

@@ -1,0 +1,5 @@
+Event sourcing mechanism:
+- add saving snapshot on exit
+
+Redux store:
+- normalize todos
