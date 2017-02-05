@@ -3,3 +3,4 @@ Event sourcing mechanism:
 
 Redux store:
 - normalize todos
+- use Immutable.js
