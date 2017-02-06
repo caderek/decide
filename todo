@@ -1,5 +1,7 @@
 Event sourcing mechanism:
 - add saving snapshot on exit
+- handle non existent store
+- better event saving - ensure that save was executed correctly before dispatching action
 
 Redux store:
 - normalize todos

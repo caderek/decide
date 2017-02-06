@@ -4,10 +4,10 @@ export const RESTORE_FROM_SNAPSHOT = 'RESTORE_FROM_SNAPSHOT'
 export const ADD_TODO = 'ADD_TODO'
 export const REMOVE_TODO = 'REMOVE_TODO'
 
-export const restoreFromSnapshot = (state) => ({
+export const restoreFromSnapshot = (snapshot) => ({
   type: RESTORE_FROM_SNAPSHOT,
   payload: {
-    state
+    snapshot
   }
 })
 

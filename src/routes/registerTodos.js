@@ -17,14 +17,19 @@ function registerTodos (store) {
       ctx.body = store.getState().todos.find(todo => todo.id === ctx.params.id)
     })
     .post('/todos', koaBody, async function (ctx) {
-      store.dispatch(addTodo(ctx.request.body.title, ctx.request.body.description))
+      const action = addTodo(ctx.request.body.title, ctx.request.body.description)
+
+      store.dispatch(action)
+
       ctx.status = 201
+      ctx.body = action.payload
     })
     .delete('/todos/:id', async function (ctx) {
       store.dispatch(removeTodo(ctx.params.id))
       ctx.status = 200
     })
     .get('/snapshot', async function (ctx) {
+      console.time('Snapshot')
       const snapshot = JSON.stringify({
         ...store.getState(),
         ...{ timestamp: Date.now() }
@@ -33,6 +38,7 @@ function registerTodos (store) {
       ctx.status = await fs
         .writeFileAsync('snapshot', snapshot)
         .then(() => 200)
+      console.timeEnd('Snapshot')
     })
 }
 

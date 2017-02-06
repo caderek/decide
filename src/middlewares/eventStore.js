@@ -7,7 +7,6 @@ const eventStore = store => next => action => {
 
     fs
       .appendFileAsync('store', `${JSON.stringify(event)}\n`)
-      .then(() => console.log('Added event to store:', event))
   }
 
   return next(action)
