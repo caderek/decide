@@ -11,26 +11,29 @@ function restoreState (store) {
       store.dispatch(restoreFromSnapshot(snapshot))
     }
 
-
-    const rl = readline.createInterface({
-      input: fs.createReadStream('store'),
-      output: process.stdout,
-      terminal: false
-    })
-
-    console.time('Restore')
-    rl
-      .on('line', (line) => {
-        const action = JSON.parse(line)
-
-        if (action.timestamp > snapshot.timestamp) {
-          store.dispatch(action)
-        }
+    if (fs.existsSync('store')) {
+      const rl = readline.createInterface({
+        input: fs.createReadStream('store'),
+        output: process.stdout,
+        terminal: false
       })
-      .on('close', () => {
-        console.timeEnd('Restore')
-        resolve()
-      })
+
+      console.time('Restore')
+      rl
+        .on('line', (line) => {
+          const action = JSON.parse(line)
+
+          if (action.timestamp > snapshot.timestamp) {
+            store.dispatch(action)
+          }
+        })
+        .on('close', () => {
+          console.timeEnd('Restore')
+          resolve()
+        })
+    } else {
+      resolve()
+    }
   })
 }
 
