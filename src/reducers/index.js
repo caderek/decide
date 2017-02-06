@@ -18,7 +18,7 @@ const initialState = fs.existsSync(snapshotPath)
 function main (state = initialState, action) {
   switch (action.type) {
     case RESTORE_FROM_SNAPSHOT:
-      return action.payload.state
+      return action.payload.snapshot
     case ADD_TODO:
       return {
         ...state,
