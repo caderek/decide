@@ -1,0 +1,8 @@
+{
+  "type": "ADD_TODO",
+  "payload": {
+    "id": null,
+    "title": "Some todo",
+    "description": "Some description..."
+  }
+}

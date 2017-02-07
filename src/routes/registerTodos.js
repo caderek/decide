@@ -11,22 +11,15 @@ const koaBody = createKoaBody()
 function registerTodos (store) {
   return createRouter()
     .get('/todos', async function (ctx) {
-      ctx.body = store.getState().todos
+      ctx.body = store.getState().todos.length
     })
     .get('/todos/:id', async function (ctx) {
       ctx.body = store.getState().todos.find(todo => todo.id === ctx.params.id)
     })
-    .post('/todos', koaBody, async function (ctx) {
-      const action = addTodo(ctx.request.body.title, ctx.request.body.description)
+    .post('/', koaBody, async function (ctx) {
+      const result = store.dispatch(ctx.request.body)
 
-      store.dispatch(action)
-
-      ctx.status = 201
-      ctx.body = action.payload
-    })
-    .delete('/todos/:id', async function (ctx) {
-      store.dispatch(removeTodo(ctx.params.id))
-      ctx.status = 200
+      ctx.body = result.payload === undefined ? result : result.payload
     })
     .get('/snapshot', async function (ctx) {
       console.time('Snapshot')

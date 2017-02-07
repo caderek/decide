@@ -3,8 +3,10 @@ Event sourcing mechanism:
 - better event saving - ensure that save was executed correctly before dispatching action
 
 Redux store:
-- normalize todos
 - use Immutable.js
+- add action validation middleware (probably not needed)
+- handle todos removing
+- handle getting data
 
 Other:
 - make constants for file names

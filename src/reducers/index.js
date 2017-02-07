@@ -11,9 +11,7 @@ const snapshotPath = path.join(__dirname, '../../snapshot')
 
 const initialState = fs.existsSync(snapshotPath)
   ? JSON.parse(fs.readFileSync(snapshotPath))
-  : {
-    todos: []
-  }
+  : { todos: {} }
 
 function main (state = initialState, action) {
   switch (action.type) {
@@ -22,12 +20,11 @@ function main (state = initialState, action) {
     case ADD_TODO:
       return {
         ...state,
-        ...{ todos: [...state.todos, action.payload] }
+        ...{ todos: { ...state.todos, ...{ [action.payload.id]: action.payload } } }
       }
     case REMOVE_TODO:
       return {
-        ...state,
-        ...{ todos: state.todos.filter(todo => todo.id !== action.payload.id) }
+        ...state
       }
     default:
       return state
