@@ -3,7 +3,7 @@ import {
   ADD_TODO,
   REMOVE_TODO,
   RESTORE_FROM_SNAPSHOT
-} from '../actions'
+} from '../actions/transformations'
 import fs from '../services/fs'
 import path from 'path'
 
@@ -13,7 +13,7 @@ const initialState = fs.existsSync(snapshotPath)
   ? JSON.parse(fs.readFileSync(snapshotPath))
   : { todos: {} }
 
-function main (state = initialState, action) {
+function mainReducer (state = initialState, action) {
   switch (action.type) {
     case RESTORE_FROM_SNAPSHOT:
       return action.payload.snapshot
@@ -22,13 +22,16 @@ function main (state = initialState, action) {
         ...state,
         ...{ todos: { ...state.todos, ...{ [action.payload.id]: action.payload } } }
       }
-    case REMOVE_TODO:
-      return {
-        ...state
-      }
+    // case REMOVE_TODO:
+    //   const todos = state.todos
+    //   delete todos[action.payload.id]
+    //   return {
+    //     ...state,
+    //     ...{ todos }
+    //   }
     default:
       return state
   }
 }
 
-export default main
+export default mainReducer

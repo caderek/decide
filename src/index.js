@@ -1,21 +1,35 @@
-/* @flow */
 import 'babel-polyfill'
 import Koa from 'koa'
-import { createStore, applyMiddleware } from 'redux'
-import main from './reducers'
-import eventStore from './middlewares/eventStore'
-import idGenerator from './middlewares/idGenerator'
-import dataDumper from './middlewares/dataDumper'
 import restoreState from './restoreState'
-import registerTodos from './routes/registerTodos'
+import store from './store'
+import createRouter from 'koa-router'
+import createKoaBody from 'koa-body'
+import fs from './services/fs'
 
 const app = new Koa()
-const store = createStore(main, applyMiddleware(dataDumper, idGenerator, eventStore))
-const todos = registerTodos(store)
+const koaBody = createKoaBody()
+
+const router = createRouter()
+  .post('/', koaBody, async function (ctx) {
+    const result = await store.dispatch(ctx.request.body)
+    ctx.body = result.payload || result
+  })
+  .get('/snapshot', async function (ctx) {
+    console.time('Snapshot')
+    const snapshot = JSON.stringify({
+      ...store.getState(),
+      ...{ timestamp: Date.now() }
+    })
+
+    ctx.status = await fs
+      .writeFileAsync('snapshot', snapshot)
+      .then(() => 200)
+    console.timeEnd('Snapshot')
+  })
 
 app
-  .use(todos.routes())
-  .use(todos.allowedMethods())
+  .use(router.routes())
+  .use(router.allowedMethods())
 
 restoreState(store)
   .then(() => {

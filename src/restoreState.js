@@ -1,6 +1,6 @@
 import fs from './services/fs'
 import readline from 'readline'
-import { restoreFromSnapshot } from './actions'
+import { restoreFromSnapshot } from './actions/transformations'
 
 function restoreState (store) {
   return new Promise((resolve) => {
@@ -23,7 +23,7 @@ function restoreState (store) {
         .on('line', (line) => {
           const action = JSON.parse(line)
 
-          if (action.timestamp > snapshot.timestamp) {
+          if (action.timestamp > snapshot.timestamp && action.payload) {
             store.dispatch(action)
           }
         })

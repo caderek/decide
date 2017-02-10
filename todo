@@ -5,8 +5,8 @@ Event sourcing mechanism:
 Redux store:
 - use Immutable.js
 - add action validation middleware (probably not needed)
-- handle todos removing
-- handle getting data
+- object instead of switch in main reducer and select function
+- better naming for select etc
 
 Other:
 - make constants for file names

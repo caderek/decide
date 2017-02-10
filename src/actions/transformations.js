@@ -1,5 +1,3 @@
-import uuid from 'uuid/v4'
-
 export const RESTORE_FROM_SNAPSHOT = 'RESTORE_FROM_SNAPSHOT'
 export const ADD_TODO = 'ADD_TODO'
 export const REMOVE_TODO = 'REMOVE_TODO'
@@ -14,7 +12,7 @@ export const restoreFromSnapshot = (snapshot) => ({
 export const addTodo = (title, description) => ({
   type: ADD_TODO,
   payload: {
-    id: uuid(),
+    id: null,
     title,
     description
   }
