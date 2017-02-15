@@ -31,8 +31,10 @@ app
   .use(router.routes())
   .use(router.allowedMethods())
 
+const PORT = 2001
+
 restoreState(store)
   .then(() => {
-    app.listen(2001, () => console.log('App listening on http://localhost:2001'))
+    app.listen(PORT, () => console.log(`App listening on http://localhost:${PORT}`))
   })
 
