@@ -12,7 +12,7 @@ const store = createStore(mainReducer, initialState, composeEnhancers(
   applyMiddleware(idGenerator, eventStore)
 ))
 
-function getInitialState () {
+export function getInitialState () {
   return fs.existsSync('snapshot')
     ? JSON.parse(fs.readFileSync('snapshot'))
     : {}
