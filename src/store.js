@@ -1,16 +1,21 @@
+import fs from './services/fs'
 import { createStore, applyMiddleware } from 'redux'
 import mainReducer from './reducers'
 import eventStore from './middlewares/eventStore'
 import idGenerator from './middlewares/idGenerator'
-import actionsRouter from './middlewares/actionsRouter'
 import { composeWithDevTools } from 'remote-redux-devtools'
-import remotedev from 'remotedev-server'
-remotedev({ hostname: 'localhost', port: 8000 })
 
 const composeEnhancers = composeWithDevTools({ realtime: true, port: 8000 })
+const initialState = getInitialState()
 
-const store = createStore(mainReducer, composeEnhancers(
-  applyMiddleware(idGenerator, eventStore, actionsRouter)
+const store = createStore(mainReducer, initialState, composeEnhancers(
+  applyMiddleware(idGenerator, eventStore)
 ))
+
+function getInitialState () {
+  return fs.existsSync('snapshot')
+    ? JSON.parse(fs.readFileSync('snapshot'))
+    : {}
+}
 
 export default store

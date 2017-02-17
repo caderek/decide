@@ -1,5 +1,5 @@
 import fs from '../services/fs'
-import { RESTORE_FROM_SNAPSHOT } from '../actions/transformations'
+import { RESTORE_FROM_SNAPSHOT } from '../actions'
 
 const eventStore = store => next => action => {
   const event = action.timestamp

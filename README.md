@@ -1,6 +1,6 @@
 # Decide
 
-## Todo
+## Issue
 
 ```javascript
 {
@@ -35,7 +35,7 @@ Will interprate all events from store
 
 ```javascript
 {
-  todos: {
+  issues: {
     uuid,
     timestamp,
     title,
@@ -45,7 +45,7 @@ Will interprate all events from store
     lastTimestamp,
   },
   priorities: {
-    todoId,
+    issueId,
     userId,
     lastTimestamp,
   },

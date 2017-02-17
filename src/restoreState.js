@@ -1,16 +1,9 @@
 import fs from './services/fs'
 import readline from 'readline'
-import { restoreFromSnapshot } from './actions/transformations'
+
 
 function restoreState (store) {
   return new Promise((resolve) => {
-    let snapshot = { timestamp: 0 }
-
-    if (fs.existsSync('snapshot')) {
-      snapshot = JSON.parse(fs.readFileSync('snapshot'))
-      store.dispatch(restoreFromSnapshot(snapshot))
-    }
-
     if (fs.existsSync('store')) {
       const rl = readline.createInterface({
         input: fs.createReadStream('store'),
@@ -23,7 +16,7 @@ function restoreState (store) {
         .on('line', (line) => {
           const action = JSON.parse(line)
 
-          if (action.timestamp > snapshot.timestamp && action.payload) {
+          if (!store.timestamp || action.timestamp > store.timestamp) {
             store.dispatch(action)
           }
         })

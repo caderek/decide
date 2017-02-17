@@ -1,40 +1,40 @@
 import 'babel-polyfill'
-import Koa from 'koa'
 import restoreState from './restoreState'
 import store from './store'
-import createRouter from 'koa-router'
-import createKoaBody from 'koa-body'
 import fs from './services/fs'
+import socketIO from 'socket.io'
 
-const app = new Koa()
-const koaBody = createKoaBody()
+const PORT = 2007
+const io = socketIO()
 
-const router = createRouter()
-  .post('/', koaBody, async function (ctx) {
-    const result = await store.dispatch(ctx.request.body)
-    ctx.body = result.payload || result
-  })
-  .get('/snapshot', async function (ctx) {
-    console.time('Snapshot')
-    const snapshot = JSON.stringify({
-      ...store.getState(),
-      ...{ timestamp: Date.now() }
+io.on('connection', (client) => {
+  console.log(`Client connected, connection id: ${client.id}`)
+
+  // client.emit('action', /* action sending initial state for client */)
+
+  client
+    .on('action', (action) => {
+      store.dispatch(action)
+        .then((result) => {
+          console.log(result)
+          client.emit('action', result)
+        })
     })
+    .on('snapshot', function () {
+      console.time('Snapshot')
+      const snapshot = JSON.stringify({
+        ...store.getState(),
+        ...{ timestamp: Date.now() }
+      })
 
-    ctx.status = await fs
-      .writeFileAsync('snapshot', snapshot)
-      .then(() => 200)
-    console.timeEnd('Snapshot')
-  })
+      fs
+        .writeFileAsync('snapshot', snapshot)
+        .then(() => console.timeEnd('Snapshot'))
+    })
+})
 
-app
-  .use(router.routes())
-  .use(router.allowedMethods())
-
-const PORT = 2001
 
 restoreState(store)
   .then(() => {
-    app.listen(PORT, () => console.log(`App listening on http://localhost:${PORT}`))
+    io.listen(PORT, () => console.log(`App listening on http://localhost:${PORT}`))
   })
-
