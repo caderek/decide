@@ -10,14 +10,14 @@ const io = socketIO()
 io.on('connection', (client) => {
   console.log(`Client connected, connection id: ${client.id}`)
 
-  // client.emit('action', /* action sending initial state for client */)
+  client.emit('init', store.getState())
 
   client
     .on('action', (action) => {
       store.dispatch(action)
         .then((result) => {
           console.log(result)
-          client.emit('action', result)
+          io.emit('action', result)
         })
     })
     .on('snapshot', function () {
