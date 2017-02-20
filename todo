@@ -9,3 +9,4 @@ Redux store:
 
 Other:
 - make constants for file names
+- refactor decide-cli socket.js (duplications in authorization and connection)

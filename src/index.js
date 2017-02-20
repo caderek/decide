@@ -14,6 +14,22 @@ io.on('connection', (client) => {
   console.log(`Client connected, connection id: ${client.id}`)
 
   client
+    .use(([event, payload, jwt], next) => {
+      if (event !== 'authenticate' && event !== 'snapshot') {
+        try {
+          jsonwebtoken.verify(jwt, secret)
+
+          if (payload) {
+            payload.user = jsonwebtoken.decode(jwt).user
+          }
+          next()
+        } catch (e) {
+          next(new Error('Unauthorized'))
+        }
+      } else {
+        next()
+      }
+    })
     .on('authenticate', ({ user, password }) => {
       const isUserVerified = verifyUser(user, password)
 
@@ -23,38 +39,23 @@ io.on('connection', (client) => {
         }, secret)
 
         client.emit('authenticated', jwt)
-
-        client
-          .use(([event, payload, jwt], next) => {
-            try {
-              jsonwebtoken.verify(jwt, secret)
-
-              if (payload) {
-                payload.user = jsonwebtoken.decode(jwt).user
-              }
-              next()
-            } catch (e) {
-              next(new Error('Unauthorized'))
-            }
-          })
-          .on('get-initial-state', () => {
-            console.log('received!')
-            client.emit('action', {
-              type: 'INIT_STATE',
-              payload: store.getState()
-            })
-          })
-          .on('action', (action) => {
-            store.dispatch(action)
-              .then((result) => {
-                console.log(result)
-                io.emit('action', result)
-              })
-          })
       } else {
-        console.log('Unauthorized')
         client.emit('server-error', 'Unauthorized')
       }
+    })
+    .on('get-initial-state', () => {
+      console.log('received!')
+      client.emit('action', {
+        type: 'INIT_STATE',
+        payload: store.getState()
+      })
+    })
+    .on('action', (action) => {
+      store.dispatch(action)
+        .then((result) => {
+          console.log(result)
+          io.emit('action', result)
+        })
     })
     .on('snapshot', function () {
       console.time('Snapshot')
