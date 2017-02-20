@@ -1,12 +1,11 @@
 Event sourcing mechanism:
 - add saving snapshot on exit
-- better event saving - ensure that save was executed correctly before dispatching action
 
 Redux store:
 - use Immutable.js
 - add action validation middleware (probably not needed)
 - object instead of switch in main reducer and select function
-- better naming for select etc
+- better handling of changes authorization (something instead of returning unchanged state when unauthorized)
 
 Other:
 - make constants for file names

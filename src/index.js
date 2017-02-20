@@ -3,22 +3,58 @@ import restoreState from './restoreState'
 import store from './store'
 import fs from './services/fs'
 import socketIO from 'socket.io'
+import jsonwebtoken from 'jsonwebtoken'
+import verifyUser from './users/verifyUser'
 
 const PORT = 2007
 const io = socketIO()
+const secret = 'aezakmi'
 
 io.on('connection', (client) => {
   console.log(`Client connected, connection id: ${client.id}`)
 
-  client.emit('init', store.getState())
-
   client
-    .on('action', (action) => {
-      store.dispatch(action)
-        .then((result) => {
-          console.log(result)
-          io.emit('action', result)
-        })
+    .on('authenticate', ({ user, password }) => {
+      const isUserVerified = verifyUser(user, password)
+
+      if (isUserVerified) {
+        const jwt = jsonwebtoken.sign({
+          user
+        }, secret)
+
+        client.emit('authenticated', jwt)
+
+        client
+          .use(([event, payload, jwt], next) => {
+            try {
+              jsonwebtoken.verify(jwt, secret)
+
+              if (payload) {
+                payload.user = jsonwebtoken.decode(jwt).user
+              }
+              next()
+            } catch (e) {
+              next(new Error('Unauthorized'))
+            }
+          })
+          .on('get-initial-state', () => {
+            console.log('received!')
+            client.emit('action', {
+              type: 'INIT_STATE',
+              payload: store.getState()
+            })
+          })
+          .on('action', (action) => {
+            store.dispatch(action)
+              .then((result) => {
+                console.log(result)
+                io.emit('action', result)
+              })
+          })
+      } else {
+        console.log('Unauthorized')
+        client.emit('server-error', 'Unauthorized')
+      }
     })
     .on('snapshot', function () {
       console.time('Snapshot')
@@ -32,7 +68,6 @@ io.on('connection', (client) => {
         .then(() => console.timeEnd('Snapshot'))
     })
 })
-
 
 restoreState(store)
   .then(() => {
